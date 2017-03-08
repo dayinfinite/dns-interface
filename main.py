@@ -2,32 +2,31 @@
 # coding=utf-8
 
 import sys
-import logging
-import BaseHTTPServer
-from SimpleHTTPServer import SimpleHTTPRequestHandler
+from flask import Flask, request, jsonify
 
-HandlerClass = SimpleHTTPRequestHandler
-ServerClass = BaseHTTPServer.HTTPServer
-Protocol = 'HTTP/1.0'
+app = Flask(__name__)
 
-#log日志初始化
-def initlog():
+
+api_list = {
+        'api/dns': u'get dns',
+        'api/update': u'update domain information',
+}
+
+@app.route("/", methods = ['GET', 'POST'])
+def index():
+    return jsonify(api_list)
+
+@app.route("/api/dns", methods=["GET", "POST"])
+def dns():
     pass
 
-
-#绑定监听端口
-def listenServer():
+@app.route("/api/update", methods=["GET", "POST"])
+def update():
     pass
 
-#
-def main():
-    ...
-
-    initlog()
-    listenServer()
 
 if __name__ == '__main__':
-    main()
+    app.run(debug=True)
 
 
 
