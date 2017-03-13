@@ -4,10 +4,8 @@
 import sys
 from flask import Flask, request, jsonify
 import simplejson as json
-from flask_json import FlaskJSON, JsonError, json_response, as_json
 import handlers
 app = Flask(__name__)
-FlaskJSON(app)
 
 api_list = {
         'api/dns': u'get dns',
@@ -22,7 +20,7 @@ def index():
 def dns():
     body = request.json
     ip = request.remote_addr
-    data  = handlers.DNSHandler(ip, body)
+    data = handlers.DNSHandler(ip, body)
     return jsonify(data)
 
 @app.route("/api/update", methods=['GET', 'POST'])

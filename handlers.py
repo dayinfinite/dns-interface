@@ -5,7 +5,7 @@ import os
 import simplejson as json
 import logging
 from config import tokens, ips
-from utils import addRecord, delRecord, modRecord
+from utils import addRecord, delRecord
 
 
 #check the dns
@@ -33,16 +33,6 @@ def delDns(records):
     }
     return response
 
-#modify the dns
-def modDns(records):
-    reason = modRecord(records)
-    response = {
-        "reason": reason,
-        "msg": "success",
-        "status": "200",
-    }
-    return response
-
 #get the Hostname by ip
 def getHostName(records):
     response = {
@@ -61,7 +51,6 @@ def getIp(records):
 handler = {
     "ADD": addDns,
     "DEL": delDns,
-    "MOD": modDns,
     "GET_IP": getIp,
     "GET_HOS": getHostName
 }

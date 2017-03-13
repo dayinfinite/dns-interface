@@ -7,5 +7,6 @@
 		"127.0.0.1":true
 	},
 	"logdir":"./log",
-	"suffix":"sina"
+	"asuffix":"sina.com",
+	"psuffix":"16.172.in-addr.arpa"
 }

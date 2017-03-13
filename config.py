@@ -4,7 +4,7 @@
 import simplejson as json
 import logging
 
-FIELD = ['listen', 'tokens', 'ips', 'logdir', 'suffix']
+FIELD = ['listen', 'tokens', 'ips', 'logdir', 'asuffix', 'psuffix']
 
 
 with open('config.json', 'r')  as f:
@@ -12,7 +12,8 @@ with open('config.json', 'r')  as f:
     listen = config['listen']
     tokens = config['tokens']
     ips = config['ips']
-    suffix = config['suffix']
+    asuffix = config['asuffix']
+    psuffix = config['psuffix']
     logdir = config['logdir']
 
 def parserConfig(cfg):
