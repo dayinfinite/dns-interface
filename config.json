@@ -7,6 +7,6 @@
 		"127.0.0.1":true
 	},
 	"logdir":"./log",
-	"asuffix":"sina.com",
+	"asuffix":"xiaojukeji.com",
 	"psuffix":"16.172.in-addr.arpa"
 }

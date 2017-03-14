@@ -10,6 +10,14 @@ import re
 from config import asuffix, psuffix
 server = '172.16.3.131'
 
+def gethost(domain, a_zone):
+    c= ""
+    test = domain.split('.')
+    for i in reversed(range(len(test))):
+        c = test[i] + '.' + c
+        if c == a_zone:
+            return test[i-1]
+
 #get dns (support by ip and hostname)
 def getDns(s):
     pass
@@ -26,17 +34,15 @@ def getHostByIp(ip):
 def getDnsIp(ip, hostname):
     pass
 
-def getAddIpAddrCmd(ip, host, ttl, zone):
-    print ip, host, ttl, zone
+def getAddIpAddrCmd(host, ip, ttl, zone):
     update = dns.update.Update(zone)
     update.add(host, ttl, 'A', ip)
     response = dns.query.tcp(update, server)
-    print response
     return response
 
-def getAddPTRCmd(rip, host, ttl, zone):
+def getAddPTRCmd(host, rip, ttl, zone):
     update = dns.update.Update(zone)
-    update.add(host, ttl, 'PTR', rip)
+    update.add(rip, ttl, 'PTR', host)
     response = dns.query.tcp(update, server)
     return response
 
@@ -46,37 +52,39 @@ def getDelIpAddrCmd(host, ip, ttl, zone):
     response = dns.query.tcp(update, server)
     return response
 
-def getDelPTRCmd(rip, host, ttl, zone):
+def getDelPTRCmd(host, rip, ttl, zone):
     update = dns.update.Update(zone)
     update.delete(rip, ttl, 'PTR', host)
     response = dns.query.tcp(update, server)
     return response
 
 def getAddRecordCmd(record):
-    host = list(set(record['domain']).union(set(asuffix)))
     ip = record['ip']
-    rip = ('.').join(ip.split('.')[::-1])
-    a_zone = asuffix
-    ptr_zone = psuffix
+    rip = ('.').join(ip.split('.')[::-1]) + '.in-addr.arpa'
+    a_zone = re.search(asuffix, record['domain'] + '.').group(0)
+    ptr_zone = re.search(psuffix, rip).group(0)
     ttl = 60
+    host = gethost(record['domain'], a_zone +'.')
     msg = checkAddRecord(record)
     if not msg[0]:
         return msg
-    print host, ip , ttl, a_zone
     getAddIpAddrCmd(host, ip, ttl, a_zone)
     getAddPTRCmd(host, rip, ttl, ptr_zone)
     return "success"
 
 def getDelRecordCmd(record):
-    host = list(set(record['domain']).union(set(asuffix)))
     ip = record['ip']
-    a_zone = asuffix
-    ptr_zone= psuffix
+    rip = ('.').join(ip.split('.')[::-1]) + '.in-addr.arpa'
+    a_zone = re.search(asuffix + '.', record['domain'] +'.').group(0)
+    ptr_zone= re.search(psuffix, rip).group(0)
+    ttl = 60
+    host = gethost(record['domain'], a_zone +'.')
     msg = checkDelRecord(record)
     if not msg[0]:
         return msg
-    getDelIpAddrCmd(host, ip, a_zone)
-    getDelPTRCmd(host, ip, ptr_zone)
+    print host, ttl, ip , a_zone
+    getDelIpAddrCmd(host, ip, ttl, a_zone)
+    getDelPTRCmd(host, ip, ttl, ptr_zone)
     return "success"
     
 
