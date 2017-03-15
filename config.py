@@ -12,8 +12,7 @@ with open('config.json', 'r')  as f:
     listen = config['listen']
     tokens = config['tokens']
     ips = config['ips']
-    asuffix = config['asuffix']
-    psuffix = config['psuffix']
+    suffix = config['suffix']
     logdir = config['logdir']
 
 def parserConfig(cfg):
