@@ -5,6 +5,7 @@
 import os
 import sys
 import re
+import commands
 from config import suffix
 from constants import NSUPDA
 server = '172.16.3.131'
@@ -27,22 +28,22 @@ def getDnsIp(ip, hostname):
 
 def getAddIpAddrCmd(host, ip, ttl):
     cmd = "echo $'server %s \nupdate add %s %d A %s\r\nsend \r\nquit\n' | nsupdate -t5 -v -k ./nsupdate.key -v" % (server, host, ttl, ip)
-    result = os.system(cmd)
+    result = commands.getstatusoutput(cmd)
     return result
 
 def getAddPTRCmd(host, rip, ttl):
     cmd = "echo $'server %s \nupdate add %s %d PTR  %s\r\nsend \r\nquit\n' | nsupdate -t5 -v -k ./nsupdate.key -v" % (server, rip, ttl, host)
-    result = os.system(cmd)
+    result = commands.getstatusoutput(cmd)
     return result
 
 def getDelIpAddrCmd(host, ip, ttl):
     cmd = "echo $'server %s \nupdate delete %s %d A %s\r\nsend \r\nquit\n' | nsupdate -t5 -v -k ./nsupdate.key -v" % (server, host, ttl, ip)
-    result = os.system(cmd)
+    result = commands.getstatusoutput(cmd)
     return result
 
 def getDelPTRCmd(host, rip, ttl):
     cmd = "echo $'server %s \nupdate delete %s %d PTR %s\r\nsend \r\nquit\n' | nsupdate -t5 -v -k ./nsupdate.key -v" % (server, rip, ttl, host)
-    result = os.system(cmd)
+    result = commands.getstatusoutput(cmd)
     return result
 
 def getAddRecordCmd(record):
@@ -53,9 +54,13 @@ def getAddRecordCmd(record):
     msg = checkAddRecord(record)
     if not msg[0]:
         return msg
-    getAddIpAddrCmd(host, ip, ttl)
-    getAddPTRCmd(host, rip, ttl)
-    return "success"
+    aresult = getAddIpAddrCmd(host, ip, ttl)
+    if aresult[0]:
+        return ("fail", aresult[1])
+    presult = getAddPTRCmd(host, rip, ttl)
+    if presult[0]:
+        return ("fail", presult[1])
+    return ("sucess", " ")
 
 def getDelRecordCmd(record):
     ip = record['ip']
@@ -65,9 +70,13 @@ def getDelRecordCmd(record):
     msg = checkDelRecord(record)
     if not msg[0]:
         return msg
-    getDelIpAddrCmd(host, ip, ttl)
-    getDelPTRCmd(host, rip, ttl)
-    return "success"
+    aresult = getDelIpAddrCmd(host, ip, ttl)
+    if aresult[0]:
+        return ("fail", aresult[1])
+    presult = getDelPTRCmd(host, rip, ttl)
+    if presult[0]:
+        return ("fail", presult[1])
+    return ("sucess", " ")
     
 
 #check add record (check ip/hostname and check dns by ip and hostname)

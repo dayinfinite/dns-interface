@@ -16,8 +16,8 @@ def checkModDns(records):
 def addDns(records):
     reason = addRecord(records)
     response = {
-        "reason": reason,
-        "msg": "success",
+        "reason": reason[1],
+        "msg": reason[0],
         "status": "200"
     }
     return response
@@ -26,8 +26,8 @@ def addDns(records):
 def delDns(records):
     reason = delRecord(records)
     response = {
-        "reason": reason,
-        "msg": "success",
+        "reason": reason[1],
+        "msg": reason[0],
         "status": "200"
 
     }
