@@ -5,26 +5,52 @@
 import os
 import sys
 import re
+import socket
 import commands
 from config import suffix
-from constants import NSUPDA
 server = '172.16.3.131'
 
 #get dns (support by ip and hostname)
-def getDns(s):
-    pass
+def getDns(record):
+    #判断是IP or hostname
+
+    if record is ip:
+        try:
+            socket.gethostbyaddr(record)
+            return True
+        except socket.herror,e:
+            return False 
+    else:
+        try:
+            socket.getaddrinfo(record, None)
+            return True
+        except socket.gaierror, e:
+            return False
 
 #get ip by hostname
-def getIpByHost(hostname):
-    pass
+def getIpByHost(ip):
+    
+    try:
+        result = socket.gethostbyaddr(ip)
+        return "sucess to get hostname by ip: %s hostname: %s" % (ip, result[0])
+    except socket.herror, e:
+        return "faled to get hostname by ip: %s" % ip 
 
 #get hostname by ip
-def getHostByIp(ip):
-    pass
+def getHostByIp(hostname):
+    try:
+        result = socket.getaddrinfo(hostname, None)
+        return "sucess to get ip by hostname: %s ip: %s" % (hostname, result[0][4])
+    except socket.gaierror, e:
+        return "faled to get ip by hostname: %s" % hostname 
 
 #get dns by ip and check by hostname(ip<-->hostname，return True)
 def getDnsIp(ip, hostname):
-    pass
+    ip_host = getIpByHost(ip)
+    host_ip = getHostByIp(hostname)
+    
+    if ip_host is not  hostname and host_ip is not  ip:
+        return "please check ip or hostname"
 
 def getAddIpAddrCmd(host, ip, ttl):
     cmd = "echo $'server %s \nupdate add %s %d A %s\r\nsend \r\nquit\n' | nsupdate -t5 -v -k ./nsupdate.key -v" % (server, host, ttl, ip)
