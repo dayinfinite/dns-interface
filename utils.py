@@ -14,7 +14,7 @@ server = '172.16.3.131'
 def getDns(record):
     #判断是IP or hostname
 
-    if record is ip:
+    if re.findall(r'(?<![\.\d])(?:\d{1,3}\.){3}\d{1,3}(?![\.\d])', record) is not None:
         try:
             socket.gethostbyaddr(record)
             return True
@@ -32,17 +32,21 @@ def getIpByHost(ip):
     
     try:
         result = socket.gethostbyaddr(ip)
-        return "sucess to get hostname by ip: %s hostname: %s" % (ip, result[0])
+        return result[0]
+        #"sucess to get hostname by ip: %s hostname: %s" % (ip, result[0])
     except socket.herror, e:
-        return "faled to get hostname by ip: %s" % ip 
+        return False
+        #"faled to get hostname by ip: %s" % ip 
 
 #get hostname by ip
 def getHostByIp(hostname):
     try:
         result = socket.getaddrinfo(hostname, None)
-        return "sucess to get ip by hostname: %s ip: %s" % (hostname, result[0][4])
+        return result[0][4]
+        #"sucess to get ip by hostname: %s ip: %s" % (hostname, result[0][4])
     except socket.gaierror, e:
-        return "faled to get ip by hostname: %s" % hostname 
+        return False
+        #"faled to get ip by hostname: %s" % hostname 
 
 #get dns by ip and check by hostname(ip<-->hostname，return True)
 def getDnsIp(ip, hostname):
@@ -111,7 +115,10 @@ def checkAddRecord(record):
         return ['False', 'invaild ip %s' % record['ip']]
     if re.findall(suffix, record['domain']) is None:
         return ['False', 'invaild doamin %s' % record['domain']]
-
+    if getDns(record['ip']):
+        return ['False', 'dns record  duplicated: %s' % record['ip']]
+    if getDns(record['domain']):
+        return ['False', 'dns record duplicated: %s' % record['domain']]
     return ['True',]
 
 #check del record
